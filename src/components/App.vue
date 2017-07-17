@@ -48,13 +48,15 @@
       return { streams: [] };
     },
     created() {
-      let streams = queryString.parse(window.location.search).streams.split(' ');
-      streams = streams.filter(s => s);
-      this.streams = streams.map((streamId, idx) => ({
-        id: streamId.trim(),
-        order: idx,
-        active: idx === 0,
-      }));
+      let streams = queryString.parse(window.location.search).streams;
+      if (streams) {
+        streams = streams.split(' ').filter(s => s);
+        this.streams = streams.map((streamId, idx) => ({
+          id: streamId.trim(),
+          order: idx,
+          active: idx === 0,
+        }));
+      }
     },
     computed: {
       chats() {
