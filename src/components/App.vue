@@ -20,6 +20,7 @@
           <chat v-for="chat in chats"
             :class="{ active: chat.id === activeChat.id }"
             :channelId="chat.id"
+            :initialized="chat.initialized"
             :key="chat.id">
           </chat>
         </div>
@@ -58,6 +59,7 @@
           order: idx,
           active: idx === 0,
         }));
+        this.activateStream(streams[0]);
       }
     },
     computed: {
@@ -74,13 +76,13 @@
     methods: {
       activateStream(streamId) {
         const previous = this.activeStream;
-        const next = this.streams.find(s => s.id === streamId);
+        const stream = this.streams.find(s => s.id === streamId);
       
         this.streams.forEach(s => s.active = false);
-        this.streams.find(s => s.id === streamId).active = true;
-        previous.order = next.order;
-        next.order = 0;
-        next.active = true;
+        stream.order = 0;
+        stream.active = true;
+        stream.initialized = true;
+        previous.order = stream.order;
 
         this.muteAll();
         this.unmute(streamId)

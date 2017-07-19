@@ -1,12 +1,12 @@
 <template>
-  <div class="chat">
+  <div class="chat" v-if="initialized">
     <iframe :src="`https://www.twitch.tv/${channelId}/chat`" height="100%" width="340px"></iframe>
   </div>
 </template>
 
 <script>
   export default {
-    props: ['channelId'],
+    props: ['channelId', 'initialized'],
   };
 </script>
 
