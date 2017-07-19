@@ -59,7 +59,11 @@
           order: idx,
           active: idx === 0,
         }));
-        this.activateStream(streams[0]);
+      }
+    },
+    mounted() {
+      if (this.streams) {
+        this.activateStream(this.streams[0].id);
       }
     },
     computed: {
@@ -75,15 +79,22 @@
     },
     methods: {
       activateStream(streamId) {
-        const previous = this.activeStream;
         const stream = this.streams.find(s => s.id === streamId);
-      
-        this.streams.forEach(s => s.active = false);
-        stream.order = 0;
-        stream.active = true;
-        stream.initialized = true;
-        previous.order = stream.order;
 
+        // Swap position of streams
+        if (this.activeStream) {
+          this.activeStream.order = stream.order;
+        }
+        stream.order = 0;
+
+        // Swap active state
+        this.streams.forEach(s => s.active = false);
+        stream.active = true;
+
+        // Initialize
+        stream.initialized = true;
+
+        // Handle audio
         this.muteAll();
         this.unmute(streamId)
       },
