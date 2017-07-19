@@ -3,7 +3,7 @@
     <div class="stream-wrapper" :id="htmlId"></div>
     <div class="stream-overlay" :class="{ active: isActive }">
       <span class="channel-id">{{ channelId }}</span>
-      <button @click="activate"></button>
+      <button @click="$emit('activate')"></button>
     </div>
   </div>
 </template>
@@ -26,9 +26,6 @@
       }
     },
     methods: {
-      activate() {
-        this.$emit('activate', this.channelId);
-      },
       ready() {
         this.$emit('ready', this.channelId);
       },
@@ -56,10 +53,12 @@
   .stream {
     position: relative;
   }
+
   .stream-wrapper {
     width: 100%;
     height: 100%;
   }
+
   .stream-wrapper iframe, object, embed {
     width: 100%;
     height: 100%;

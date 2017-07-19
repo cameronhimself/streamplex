@@ -9,6 +9,7 @@
             :class="{ active: stream.id === activeStream.id }"
             :ref="getStreamRef(stream.id)"
             :channelId="stream.id"
+            :key="stream.id"
             @activate="activateStream(stream.id)"
             @ready="onReady(stream.id)">
           </stream>
@@ -18,7 +19,8 @@
         <div id="chats">
           <chat v-for="chat in chats"
             :class="{ active: chat.id === activeChat.id }"
-            :channelId="chat.id">
+            :channelId="chat.id"
+            :key="chat.id">
           </chat>
         </div>
       </div>
@@ -126,14 +128,7 @@
 </script>
 
 <style lang="scss">
-  @import '../assets/base.scss';
-
-  $primary-color: #475aeb;
-  body, button, input {
-    font-size: 16px;
-    color: #fff;
-    font-family: 'Josefin Sans', sans-serif;
-  }
+  @import '../assets/styles/base.scss';
 
   h1 {
     display: inline-block;
@@ -142,35 +137,6 @@
     color: #fff;
     font-size: 30px;
     text-transform: uppercase;
-  }
-
-  button {
-    transition: background-color 0.2s, color 0.2s;
-    color: #fff;
-    border: 2px solid $primary-color;
-    background-color: #000;
-    border-radius: 5px;
-    padding: 5px 15px;
-    cursor: pointer;
-    text-transform: uppercase;
-    &:hover {
-      background-color: $primary-color;
-    }
-  }
-
-  input[type="text"] {
-    color: #000;
-    border: none;
-    padding: 7px 10px;
-    border-radius: 5px;
-  }
-
-  html, body {
-    height: 100%;
-  }
-
-  html {
-    background-color: #000;
   }
 
   #intro {
@@ -209,7 +175,7 @@
   #chat-col {
     vertical-align: top;
     text-align: right;
-    width: 1px;
+    width: 1px; 
   }
 
   #streams-col {

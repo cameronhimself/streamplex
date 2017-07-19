@@ -1,0 +1,18 @@
+@import 'reset';
+@import 'variables';
+@import 'buttons';
+@import 'forms';
+
+html, button, input {
+  font-size: 16px;
+  color: #fff;
+  font-family: 'Josefin Sans', sans-serif;
+}
+
+html, body {
+  height: 100%;
+}
+
+html {
+  background-color: #000;
+}

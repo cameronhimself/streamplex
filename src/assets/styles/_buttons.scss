@@ -1,0 +1,13 @@
+button {
+  transition: background-color 0.2s, color 0.2s;
+  color: #fff;
+  border: 2px solid $primary-color;
+  background-color: #000;
+  border-radius: 5px;
+  padding: 5px 15px;
+  cursor: pointer;
+  text-transform: uppercase;
+  &:hover {
+    background-color: $primary-color;
+  }
+}
