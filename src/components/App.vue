@@ -11,7 +11,8 @@
             :channelId="stream.id"
             :key="stream.id"
             @activate="activateStream(stream.id)"
-            @ready="onReady(stream.id)">
+            @ready="onReady(stream.id)"
+            @close="closeStream(stream.id)">
           </stream>
         </div>
       </div>
@@ -32,7 +33,7 @@
         <p>Add your streams below, separated by spaces.</p>
         <form>
           <input name="streams" type="text" placeholder="stream1 stream2 stream3..." />
-          <button type="submit">Watch</button>
+          <button class="btn" type="submit">Watch</button>
         </form>
       </div>
     </div>
@@ -78,6 +79,15 @@
       },
     },
     methods: {
+      closeStream(streamId) {
+        const toClose = this.streams.find(s => s.id === streamId);
+        if (toClose) {
+          this.streams.splice(this.streams.indexOf(toClose), 1);
+          if (toClose.active) {
+            this.activateStream(this.streams[0]);
+          }
+        }
+      },
       activateStream(streamId) {
         const stream = this.streams.find(s => s.id === streamId);
 

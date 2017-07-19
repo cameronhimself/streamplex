@@ -2,7 +2,9 @@
   <div class="stream">
     <div class="stream-wrapper" :id="htmlId"></div>
     <div class="stream-overlay" :class="{ active: isActive }">
-      <span class="channel-id">{{ channelId }}</span>
+      <div class="channel-badge">
+        <span class="channel-id">{{ channelId }}</span><button class="close" @click="$emit('close')">&times;</button>
+      </div>
       <button @click="$emit('activate')"></button>
     </div>
   </div>
@@ -81,19 +83,7 @@
     background-color: rgba(0,0,0,0.0);
   }
 
-  .stream-overlay .channel-id {
-    color: #fff;
-    padding: 10px 20px;
-    background: rgba(0,0,0,.5);
-    font-weight: bold;
-    display: block;
-    float: left;
-    position: absolute;
-    right: 0;
-    bottom: 0;
-  }
-
-  .stream-overlay button {
+  .stream-overlay > button {
     display: block;
     position: absolute;
     top: 0;
@@ -106,6 +96,38 @@
     background: none;
     border: none;
     cursor: pointer;
+  }
+
+  .channel-badge {
+    background: rgba(0,0,0,.5);
+    display: block;
+    float: left;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    border: 1px solid rgba(40,40,40,.5);
+    border-bottom: none;
+    border-right: none;
+    > .channel-id, > .close {
+      line-height: 1;
+      font-size: 16px;
+      padding: 5px 12px;
+      vertical-align: middle;
+      color: #fff;
+      display: inline-block;
+    }
+    > .channel-id {
+      font-weight: bold;
+    }
+    > .close {
+      transition: background-color 0.2s;
+      font-family: 'Arial', sans-serif;
+      font-size: 24px;
+      &:hover {
+        background-color: rgba(255,0,0,.5);
+      }
+    }
   }
 
   .stream.active .stream-overlay {
