@@ -63,7 +63,7 @@
       }
     },
     mounted() {
-      if (this.streams) {
+      if (this.streams.length) {
         this.activateStream(this.streams[0].id);
       }
     },
