@@ -1,13 +1,27 @@
-var path = require('path')
-var webpack = require('webpack')
+var path = require('path');
+var webpack = require('webpack');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+var HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin');
+var FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 
 module.exports = {
-  entry: './src/main.js',
+  entry: path.resolve(__dirname, 'src/main.js'),
   output: {
-    path: path.resolve(__dirname, './dist'),
-    publicPath: '/dist/',
-    filename: 'build.js'
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: './',
+    filename: 'app.js'
   },
+  plugins: [
+    new HtmlWebpackPlugin({
+      title: 'Streamplex',
+      template: path.resolve(__dirname, 'src/index.template.ejs'),
+      alwaysWriteToDisk: true,
+    }),
+    new HtmlWebpackHarddiskPlugin({
+      outputPath: path.resolve(__dirname, 'dist')
+    }),
+    new FaviconsWebpackPlugin(path.resolve(__dirname, 'src/assets/logo.png')),
+  ],
   module: {
     rules: [
       {
@@ -51,13 +65,14 @@ module.exports = {
   },
   devServer: {
     historyApiFallback: true,
-    noInfo: true
+    noInfo: true,
+    publicPath: '/',
   },
   performance: {
     hints: false
   },
   devtool: '#eval-source-map'
-}
+};
 
 if (process.env.NODE_ENV === 'production') {
   module.exports.devtool = '#source-map'
@@ -77,5 +92,5 @@ if (process.env.NODE_ENV === 'production') {
     new webpack.LoaderOptionsPlugin({
       minimize: true
     })
-  ])
+  ]);
 }
