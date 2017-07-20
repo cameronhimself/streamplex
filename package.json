@@ -8,7 +8,8 @@
   },
   "scripts": {
     "start": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "clean": "rimraf dist"
   },
   "dependencies": {
     "query-string": "^4.3.4",
@@ -19,6 +20,7 @@
     "babel-core": "^6.0.0",
     "babel-loader": "^6.0.0",
     "babel-preset-env": "^1.5.1",
+    "babel-register": "^6.24.1",
     "cross-env": "^3.0.0",
     "css-loader": "^0.25.0",
     "favicons-webpack-plugin": "0.0.7",
@@ -26,6 +28,7 @@
     "html-webpack-harddisk-plugin": "^0.1.0",
     "html-webpack-plugin": "^2.29.0",
     "node-sass": "^4.5.0",
+    "rimraf": "^2.6.1",
     "sass-loader": "^5.0.1",
     "vue-loader": "^12.1.0",
     "vue-template-compiler": "^2.3.3",

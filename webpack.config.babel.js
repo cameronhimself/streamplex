@@ -3,6 +3,7 @@ var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin');
 var FaviconsWebpackPlugin = require('favicons-webpack-plugin');
+var constants = require('./src/constants');
 
 module.exports = {
   entry: path.resolve(__dirname, 'src/main.js'),
@@ -13,14 +14,18 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'Streamplex',
+      title: constants.appName,
       template: path.resolve(__dirname, 'src/index.template.ejs'),
+      minify: { collapseWhitespace: true },
       alwaysWriteToDisk: true,
     }),
     new HtmlWebpackHarddiskPlugin({
-      outputPath: path.resolve(__dirname, 'dist')
+      outputPath: path.resolve(__dirname, 'dist'),
     }),
-    new FaviconsWebpackPlugin(path.resolve(__dirname, 'src/assets/logo.png')),
+    new FaviconsWebpackPlugin({
+      logo: path.resolve(__dirname, 'src/assets/logo.png'),
+      title: constants.appName,
+    }),
   ],
   module: {
     rules: [
@@ -37,16 +42,17 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'babel-loader',
+        query: {
+          babelrc: false,
+          presets: [
+            ['env', { modules: false }],
+          ],
+        },
         exclude: /node_modules/
       },
       {
         test: /\.(sass|scss)$/,
         loader: 'css-loader!sass-loader',
-        exclude: /node_modules/
-      },
-      {
-        test: /\.css$/,
-        loader: 'css-loader',
         exclude: /node_modules/
       },
       {
