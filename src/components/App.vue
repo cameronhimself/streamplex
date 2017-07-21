@@ -6,7 +6,7 @@
           <stream v-for="stream in streams"
             :data-stream="stream.id"
             :style="getInlineStreamStyle(stream.id, stream.order)"
-            :class="{ active: stream.id === activeStream.id }"
+            :active="stream.id === activeStream.id"
             :ref="getStreamRef(stream.id)"
             :channelId="stream.id"
             :key="stream.id"

@@ -1,7 +1,7 @@
 <template>
-  <div class="stream">
+  <div class="stream" :class="{ active }">
     <div class="stream-wrapper" :id="htmlId"></div>
-    <div class="stream-overlay" :class="{ active: isActive }">
+    <div v-if="! active" class="stream-overlay">
       <div class="channel-badge">
         <span class="channel-id">{{ channelId }}</span><button class="close" @click="$emit('close')">&times;</button>
       </div>
@@ -12,15 +12,9 @@
 
 <script>
   export default {
-    props: [
-      'channelId',
-      'isActive',
-    ],
+    props: [ 'channelId', 'active' ],
     data() {
-      return {
-        player: null,
-        isReady: false,
-      };
+      return { player: null, ready: false };
     },
     computed: {
       htmlId() {
@@ -28,8 +22,11 @@
       }
     },
     methods: {
-      ready() {
-        this.$emit('ready', this.channelId);
+      onReady() {
+        if (! this.ready) {
+          this.ready = true;
+          this.$emit('ready');
+        }
       },
     },
     mounted() {
@@ -38,15 +35,8 @@
         width: '100%',
         height: '100%',
       };
-      const self = this;
-      const player = new Twitch.Player(this.htmlId, options);
-      this.player = player;
-      player.addEventListener(Twitch.Player.PLAY, function() {
-        if (! this.isReady) {
-          this.isReady = true;
-          self.ready();
-        }
-      });
+      this.player = new Twitch.Player(this.htmlId, options);
+      this.player.addEventListener(Twitch.Player.PLAY, this.onReady);
     },
   };
 </script>
@@ -59,11 +49,10 @@
   .stream-wrapper {
     width: 100%;
     height: 100%;
-  }
-
-  .stream-wrapper iframe, object, embed {
-    width: 100%;
-    height: 100%;
+    iframe, object, embed {
+      width: 100%;
+      height: 100%;
+    }
   }
 
   .stream-overlay {
@@ -77,25 +66,23 @@
     background-color: rgba(0,0,0,0.3);
     width: 100%;
     height: 100%;
-  }
-
-  .stream-overlay:hover {
-    background-color: rgba(0,0,0,0.0);
-  }
-
-  .stream-overlay > button {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
-    width: 100%;
-    height: 100%;
-    background: none;
-    border: none;
-    cursor: pointer;
+    &:hover {
+      background-color: rgba(0,0,0,0.0);
+    }
+    > button {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
+      width: 100%;
+      height: 100%;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
   }
 
   .channel-badge {
@@ -128,9 +115,5 @@
         background-color: rgba(255,0,0,.5);
       }
     }
-  }
-
-  .stream.active .stream-overlay {
-    display: none;
   }
 </style>
