@@ -3,7 +3,7 @@ var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin');
 var FaviconsWebpackPlugin = require('favicons-webpack-plugin');
-var constants = require('./src/constants');
+import constants from './src/constants';
 
 module.exports = {
   entry: path.resolve(__dirname, 'src/main.js'),
