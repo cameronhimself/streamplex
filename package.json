@@ -1,6 +1,11 @@
 {
   "name": "streamplex",
   "description": "A multi-stream viewer",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cameronhimself/streamplex.git"
+  },
   "version": "1.0.0",
   "author": {
     "name": "J. Cameron McDonald",
