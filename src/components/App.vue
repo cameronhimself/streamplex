@@ -9,6 +9,7 @@
             :active="stream.id === activeStream.id"
             :ref="getStreamRef(stream.id)"
             :channelId="stream.id"
+            :testMode="testMode"
             :key="stream.id"
             @activate="activateStream(stream.id)"
             @ready="onReady(stream.id)"
@@ -22,6 +23,7 @@
             :class="{ active: chat.id === activeChat.id }"
             :channelId="chat.id"
             :initialized="chat.initialized"
+            :testMode="testMode"
             :key="chat.id">
           </chat>
         </div>
@@ -49,17 +51,20 @@
     name: 'app',
     components: { Stream, Chat },
     data () {
-      return { streams: [] };
+      return { streams: [], testMode: false };
     },
     created() {
-      let streams = queryString.parse(window.location.search).streams;
-      if (streams) {
-        streams = streams.split(' ').filter(s => s);
-        this.streams = streams.map((streamId, idx) => ({
-          id: streamId.trim(),
-          order: idx,
-          active: idx === 0,
-        }));
+      const parsed = queryString.parse(window.location.search);
+      this.testMode = !! parsed.testMode;
+      if (parsed.streams) {
+        this.streams = parsed.streams
+          .split(' ')
+          .filter(s => s) // filter empty strings
+          .map((streamId, idx) => ({
+            id: streamId.trim(),
+            order: idx,
+            active: idx === 0,
+          }));
       }
     },
     mounted() {
@@ -105,8 +110,10 @@
         stream.initialized = true;
 
         // Handle audio
-        this.muteAll();
-        this.unmute(streamId)
+        if (! this.testMode) {
+          this.muteAll();
+          this.unmute(streamId)
+        }
       },
       onReady(streamId) {
         this.streams.find(s => s.id === streamId).ready = true;
@@ -218,6 +225,7 @@
     height: 30%;
     width: 25%;
     &.active {
+      background: none;
       width: 100%;
       height: 70%;
     }

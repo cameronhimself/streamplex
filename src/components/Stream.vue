@@ -12,7 +12,11 @@
 
 <script>
   export default {
-    props: [ 'channelId', 'active' ],
+    props: {
+      channelId: {},
+      active: {},
+      testMode: { default: false },
+    },
     data() {
       return { player: null, ready: false };
     },
@@ -30,13 +34,15 @@
       },
     },
     mounted() {
-      const options = {
-        channel: this.channelId,
-        width: '100%',
-        height: '100%',
-      };
-      this.player = new Twitch.Player(this.htmlId, options);
-      this.player.addEventListener(Twitch.Player.PLAY, this.onReady);
+      if (! this.testMode) {
+        const options = {
+          channel: this.channelId,
+          width: '100%',
+          height: '100%',
+        };
+        this.player = new Twitch.Player(this.htmlId, options);
+        this.player.addEventListener(Twitch.Player.PLAY, this.onReady);
+      }
     },
   };
 </script>
@@ -44,6 +50,7 @@
 <style lang="scss">
   .stream {
     position: relative;
+    background: #090909;
   }
 
   .stream-wrapper {
