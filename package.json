@@ -12,6 +12,7 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
+    "history": "^4.6.3",
     "query-string": "^4.3.4",
     "reset-css": "^2.2.0",
     "vue": "^2.3.3"

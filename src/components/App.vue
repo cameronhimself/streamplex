@@ -43,9 +43,12 @@
 </template>
 
 <script>
+  import createHistory from 'history/createBrowserHistory'
   import Stream from './Stream.vue';
   import Chat from './Chat.vue';
   import queryString from 'query-string';
+
+  const history = createHistory();
 
   export default {
     name: 'app',
@@ -82,6 +85,23 @@
       activeChat() {
         return this.streams.find(s => s.active);
       },
+      streamsQueryString() {
+        return this.streams.slice(0)
+          .sort((a, b) => a.order - b.order)
+          .map(s => s.id)
+          .join(' ');
+      },
+    },
+    watch: {
+      streams(newStreams) {
+        const currentQueryParams = queryString.parse(window.location.search);
+        if (this.streamsQueryString !== currentQueryParams.streams) {
+          currentQueryParams.streams = this.streamsQueryString;
+          let newQueryString = queryString.stringify(currentQueryParams);
+          newQueryString = newQueryString.replace(/%20/g, '+');
+          history.replace(`?${newQueryString}`);
+        }
+      },
     },
     methods: {
       closeStream(streamId) {
@@ -95,6 +115,7 @@
       },
       activateStream(streamId) {
         const stream = this.streams.find(s => s.id === streamId);
+        const streams = this.streams.slice(0);
 
         // Swap position of streams
         if (this.activeStream) {
@@ -103,11 +124,14 @@
         stream.order = 0;
 
         // Swap active state
-        this.streams.forEach(s => s.active = false);
+        streams.forEach(s => s.active = false);
         stream.active = true;
 
         // Initialize
         stream.initialized = true;
+
+        // Update
+        this.streams = streams;
 
         // Handle audio
         if (! this.testMode) {
