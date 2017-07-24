@@ -1,37 +1,20 @@
 <template>
   <div id="app">
     <div v-if="streams.length" id="app-container">
-      <div id="streams-col">
-        <div id="streams">
-          <stream v-for="stream in streams"
-            :data-stream="stream.id"
-            :style="getStreamStyle(stream.id, stream.order)"
-            :active="stream.id === activeStream.id"
-            :ref="getStreamRef(stream.id)"
-            :channelId="stream.id"
-            :testMode="testMode"
-            :key="stream.id"
-            @activate="activateStream(stream.id)"
-            @ready="onReady(stream.id)"
-            @close="closeStream(stream.id)">
-          </stream>
-        </div>
-      </div>
-      <div id="chat-col" :class="{ open: isChatOpen }">
-        <div v-show="isChatOpen" id="chats">
-          <chat v-for="chat in chats"
-            :class="{ active: chat.id === activeChat.id }"
-            :channelId="chat.id"
-            :initialized="chat.initialized"
-            :testMode="testMode"
-            :key="chat.id">
-          </chat>
-        </div>
-        <button id="chat-toggle" :class="{ closed: ! isChatOpen }" @click="isChatOpen = ! isChatOpen">
-          <span v-if="isChatOpen">&rsaquo;</span>
-          <span v-else>&lsaquo;</span>
-        </button>
-      </div>
+      <stream-column
+        :streams="streams"
+        :testMode="testMode"
+        :activeStream="activeStreamRatio"
+        @streamReady="streamReady"
+        @activateStream="activateStream"
+        @closeStream="closeStream">
+      </stream-column>
+      <chat-column
+        :chats="chats"
+        :isOpen="isChatOpen"
+        :testMode="testMode"
+        @toggleChat="isChatOpen = ! isChatOpen">
+      </chat-column>
     </div>
     <div v-else id="app-container">
       <div id="intro">
@@ -48,15 +31,15 @@
 
 <script>
   import createHistory from 'history/createBrowserHistory'
-  import Stream from './Stream.vue';
-  import Chat from './Chat.vue';
+  import StreamColumn from './StreamColumn.vue';
+  import ChatColumn from './ChatColumn.vue';
   import queryString from 'query-string';
 
   const history = createHistory();
 
   export default {
     name: 'app',
-    components: { Stream, Chat },
+    components: { StreamColumn, ChatColumn },
     data () {
       return {
         streams: [],
@@ -79,11 +62,6 @@
             order: idx,
             active: idx === 0,
           }));
-      }
-    },
-    mounted() {
-      if (this.streams.length) {
-        this.activateStream(this.streams[0].id);
       }
     },
     computed: {
@@ -148,50 +126,18 @@
         this.streams = streams;
 
         // Handle audio
-        if (! this.testMode) {
-          this.muteAll();
-          this.unmute(streamId)
-        }
+        this.streams.forEach(s => s.player && s.player.setMuted(true));
+        stream.player.setMuted(false);
       },
-      onReady(streamId) {
-        this.streams.find(s => s.id === streamId).ready = true;
-        if (streamId === this.activeStream.id) {
-          this.setVolume(streamId, 1);
-          this.unmute(streamId);
+      streamReady({ streamId, player }) {
+        const stream = this.streams.find(s => s.id === streamId);
+        stream.ready = true;
+        stream.player = player;
+        if (stream === this.activeStream) {
+          this.activateStream(streamId);
         } else {
-          this.mute(streamId);
+          stream.player.setMuted(true);
         }
-      },
-      mute(channelId) {
-        this.getStreamPlayer(channelId).setMuted(true);
-      },
-      unmute(channelId) {
-        this.getStreamPlayer(channelId).setMuted(false);
-      },
-      setVolume(channelId, vol) {
-        this.getStreamPlayer(channelId).setVolume(vol);
-      },
-      muteAll() {
-        this.streams.forEach(s => this.mute(s.id));
-      },
-      getStreamPlayer(streamId) {
-        const ref = this.$refs[this.getStreamRef(streamId)][0];
-        if (ref) {
-          return ref.player;
-        }
-        return null;
-      },
-      getStreamRef(channelId) {
-        return `stream_${channelId}`;
-      },
-      getStreamStyle(streamId, order) {
-        const active = this.activeStream.id === streamId;
-        const ratio = active ? this.activeStreamRatio : this.inactiveStreamRatio;
-        return {
-          order: active ? -1 : order,
-          width: active ? '100%' : `${100 / (this.streams.length - 1)}%`,
-          height: `${ratio * 100}%`,
-        };
       },
     },
   };
@@ -199,33 +145,6 @@
 
 <style lang="scss">
   @import '../assets/styles/base.scss';
-
-  #chat-toggle {
-    transition: left 0.4s, color 0.4s, opacity 0.4s;
-    position: absolute;
-    display: block;
-    box-sizing: border-box;
-    width: 50px;
-    height: 50px;
-    background: #222;
-    color: #555;
-    top: 50%;
-    border-radius: 50%;
-    padding-left: 5px;
-    font-family: 'Arial', sans-serif;
-    font-size: 18px;
-    left: 0px;
-    text-align: left;
-    transform: translateY(-50%);
-    z-index: -1;
-    border: 1px solid #666;
-    &.closed {
-      opacity: 0.3;
-      position: fixed;
-      left: auto;
-      right: -30px;
-    }
-  }
 
   h1 {
     display: inline-block;
@@ -268,49 +187,4 @@
     display: table-cell;
     height: 100vh;
   }
-
-  #chat-col {
-    position: relative;
-    z-index: 1;
-    vertical-align: top;
-    text-align: right;
-    width: 1px;
-    &:hover {
-      > #chat-toggle {
-        opacity: 1;
-        color: #fff;
-      }
-    }
-    &.open:hover {
-      > #chat-toggle {
-        left: -20px;
-      }
-    }
-  }
-
-  #streams-col {
-    vertical-align: middle;
-  }
-
-  #streams {
-    height: 100vh;
-    overflow: hidden;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: stretch;
-    justify-content: center;
-  }
-
-  .stream {
-    &.active {
-      background: none;
-      width: 100%;
-    }
-  }
-
-  .inactive-chat {
-    position: relative;
-    display: none;
-  }
-  
 </style>

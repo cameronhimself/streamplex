@@ -5,20 +5,24 @@
       <div class="channel-badge">
         <span class="channel-id">{{ channelId }}</span><button class="close" @click="$emit('close')">&times;</button>
       </div>
-      <button @click="$emit('activate')"></button>
+      <button @click="ready && $emit('activate')"></button>
     </div>
   </div>
 </template>
 
 <script>
+  const dummyPlayer = {
+    setMuted() {},
+    setVolume() {},
+    addEventListener() {},
+  };
+
   export default {
     props: {
       channelId: {},
       active: {},
+      ready: { default: false },
       testMode: { default: false },
-    },
-    data() {
-      return { player: null, ready: false };
     },
     computed: {
       htmlId() {
@@ -26,22 +30,22 @@
       }
     },
     methods: {
-      onReady() {
+      onReady(player) {
         if (! this.ready) {
-          this.ready = true;
-          this.$emit('ready');
+          this.$emit('ready', this.channelId, player);
         }
       },
     },
     mounted() {
-      if (! this.testMode) {
-        const options = {
+      if (this.testMode) {
+        this.onReady(dummyPlayer);
+      } else {
+        const player = new Twitch.Player(this.htmlId, {
           channel: this.channelId,
           width: '100%',
           height: '100%',
-        };
-        this.player = new Twitch.Player(this.htmlId, options);
-        this.player.addEventListener(Twitch.Player.PLAY, this.onReady);
+        });
+        player.addEventListener(Twitch.Player.PLAY, this.onReady.bind(this, player));
       }
     },
   };
