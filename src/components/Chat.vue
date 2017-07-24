@@ -1,6 +1,6 @@
 <template>
-  <div class="chat" v-if="initialized">
-    <iframe v-if="! testMode" :src="`https://www.twitch.tv/${channelId}/chat`" height="100%" width="340px"></iframe>
+  <div  v-if="initialized" class="chat" :style="{ width: `${width}px` }">
+    <iframe v-if="! testMode" :src="`https://www.twitch.tv/${channelId}/chat`" height="100%" :width="`${width}px`"></iframe>
   </div>
 </template>
 
@@ -10,6 +10,7 @@
       channelId: {},
       initialized: {},
       testMode: { default: false },
+      width: { default: 340 },
     },
   };
 </script>
