@@ -17,8 +17,8 @@
           </stream>
         </div>
       </div>
-      <div id="chat-col">
-        <div id="chats">
+      <div id="chat-col" :class="{ open: isChatOpen }">
+        <div v-show="isChatOpen" id="chats">
           <chat v-for="chat in chats"
             :class="{ active: chat.id === activeChat.id }"
             :channelId="chat.id"
@@ -27,6 +27,10 @@
             :key="chat.id">
           </chat>
         </div>
+        <button id="chat-toggle" :class="{ closed: ! isChatOpen }" @click="isChatOpen = ! isChatOpen">
+          <span v-if="isChatOpen">&rsaquo;</span>
+          <span v-else>&lsaquo;</span>
+        </button>
       </div>
     </div>
     <div v-else id="app-container">
@@ -54,7 +58,12 @@
     name: 'app',
     components: { Stream, Chat },
     data () {
-      return { streams: [], testMode: false, activeStreamRatio: 0.7 };
+      return {
+        streams: [],
+        activeStreamRatio: 0.7,
+        isChatOpen: true,
+        testMode: false,
+      };
     },
     created() {
       const parsed = queryString.parse(window.location.search);
@@ -189,6 +198,33 @@
 <style lang="scss">
   @import '../assets/styles/base.scss';
 
+  #chat-toggle {
+    transition: left 0.4s, color 0.4s, opacity 0.4s;
+    position: absolute;
+    display: block;
+    box-sizing: border-box;
+    width: 50px;
+    height: 50px;
+    background: #222;
+    color: #555;
+    top: 50%;
+    border-radius: 50%;
+    padding-left: 5px;
+    font-family: 'Arial', sans-serif;
+    font-size: 18px;
+    left: 0px;
+    text-align: left;
+    transform: translateY(-50%);
+    z-index: -1;
+    border: 1px solid #666;
+    &.closed {
+      opacity: 0.3;
+      position: fixed;
+      left: auto;
+      right: -30px;
+    }
+  }
+
   h1 {
     display: inline-block;
     padding-bottom: 10px;
@@ -232,9 +268,22 @@
   }
 
   #chat-col {
+    position: relative;
+    z-index: 1;
     vertical-align: top;
     text-align: right;
-    width: 1px; 
+    width: 1px;
+    &:hover {
+      > #chat-toggle {
+        opacity: 1;
+        color: #fff;
+      }
+    }
+    &.open:hover {
+      > #chat-toggle {
+        left: -20px;
+      }
+    }
   }
 
   #streams-col {
