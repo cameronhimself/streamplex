@@ -67,7 +67,9 @@
     },
     created() {
       const parsed = queryString.parse(window.location.search);
-      this.testMode = parsed.testMode != false;
+      if (parsed.testMode !== undefined) {
+        this.testMode = parsed.testMode != false;
+      }
       if (parsed.streams) {
         this.streams = parsed.streams
           .split(' ')
