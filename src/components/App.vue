@@ -5,7 +5,7 @@
         <div id="streams">
           <stream v-for="stream in streams"
             :data-stream="stream.id"
-            :style="getInlineStreamStyle(stream.id, stream.order)"
+            :style="getStreamStyle(stream.id, stream.order)"
             :active="stream.id === activeStream.id"
             :ref="getStreamRef(stream.id)"
             :channelId="stream.id"
@@ -54,7 +54,7 @@
     name: 'app',
     components: { Stream, Chat },
     data () {
-      return { streams: [], testMode: false };
+      return { streams: [], testMode: false, activeStreamRatio: 0.7 };
     },
     created() {
       const parsed = queryString.parse(window.location.search);
@@ -90,6 +90,9 @@
           .sort((a, b) => a.order - b.order)
           .map(s => s.id)
           .join(' ');
+      },
+      inactiveStreamRatio() {
+        return 1 - this.activeStreamRatio;
       },
     },
     watch: {
@@ -170,11 +173,13 @@
       getStreamRef(channelId) {
         return `stream_${channelId}`;
       },
-      getInlineStreamStyle(streamId, order) {
+      getStreamStyle(streamId, order) {
         const active = this.activeStream.id === streamId;
+        const ratio = active ? this.activeStreamRatio : this.inactiveStreamRatio;
         return {
           order: active ? -1 : order,
           width: active ? '100%' : `${100 / (this.streams.length - 1)}%`,
+          height: `${ratio * 100}%`,
         };
       },
     },
@@ -246,12 +251,9 @@
   }
 
   .stream {
-    height: 30%;
-    width: 25%;
     &.active {
       background: none;
       width: 100%;
-      height: 70%;
     }
   }
 
