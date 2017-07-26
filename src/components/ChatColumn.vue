@@ -10,13 +10,16 @@
       </chat>
     </div>
     <button id="chat-toggle" :class="{ closed: ! isOpen }" @click="$emit('toggleChat')">
-      <span v-if="isOpen">&rsaquo;</span>
-      <span v-else>&lsaquo;</span>
+      <icon v-if="isOpen" name="angle-right"></icon>
+      <icon v-else name="angle-left"></icon>
     </button>
   </div>
 </template>
 
 <script>
+  import 'vue-awesome/icons/angle-left';
+  import 'vue-awesome/icons/angle-right';
+  import Icon from 'vue-awesome/components/Icon.vue';
   import Chat from './Chat.vue';
 
   export default {
@@ -25,7 +28,7 @@
       isOpen: { default: true },
       testMode: { default: false },
     },
-    components: { Chat },
+    components: { Chat, Icon },
   };
 </script>
 
@@ -62,7 +65,7 @@
     border-radius: 50%;
     padding-left: 5px;
     font-family: 'Arial', sans-serif;
-    font-size: 18px;
+    line-height: 100%;
     left: 0px;
     text-align: left;
     transform: translateY(-50%);
