@@ -62,6 +62,7 @@
             id: streamId.trim(),
             order: idx,
             active: idx === 0,
+            ready: false,
           }));
       }
     },

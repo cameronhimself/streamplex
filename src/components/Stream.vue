@@ -3,9 +3,9 @@
     <div class="stream-wrapper" :id="htmlId"></div>
     <div v-if="! active" class="stream-overlay">
       <div class="channel-badge">
-        <button class="channel-id" @click="ready && $emit('activate')">{{ channelId }}</button><button class="close" @click="$emit('close')">&times;</button>
+        <button class="channel-id" @click="activate">{{ channelId }}</button><button class="close" @click="$emit('close')">&times;</button>
       </div>
-      <button @click="ready && $emit('activate')"></button>
+      <button @click="activate"></button>
     </div>
   </div>
 </template>
@@ -30,6 +30,11 @@
       }
     },
     methods: {
+      activate() {
+        if (this.ready) {
+          this.$emit('activate');
+        }
+      },
       onReady(player) {
         if (! this.ready) {
           this.$emit('ready', this.channelId, player);
