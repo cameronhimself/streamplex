@@ -47,6 +47,7 @@
       } else {
         const player = new Twitch.Player(this.htmlId, {
           channel: this.channelId,
+          muted: true,
           width: '100%',
           height: '100%',
         });
