@@ -32,6 +32,7 @@
 <script>
   import createHistory from 'history/createBrowserHistory'
   import StreamColumn from './StreamColumn.vue';
+  import Modal from './Modal.vue';
   import ChatColumn from './ChatColumn.vue';
   import queryString from 'query-string';
 
@@ -39,7 +40,7 @@
 
   export default {
     name: 'app',
-    components: { StreamColumn, ChatColumn },
+    components: { StreamColumn, ChatColumn, Modal },
     data () {
       return {
         streams: [],
