@@ -3,7 +3,7 @@
     <div class="stream-wrapper" :id="htmlId"></div>
     <div v-if="! active" class="stream-overlay">
       <div class="channel-badge">
-        <span class="channel-id">{{ channelId }}</span><button class="close" @click="$emit('close')">&times;</button>
+        <button class="channel-id" @click="ready && $emit('activate')">{{ channelId }}</button><button class="close" @click="$emit('close')">&times;</button>
       </div>
       <button @click="ready && $emit('activate')"></button>
     </div>
@@ -104,22 +104,29 @@
     right: 0;
     bottom: 0;
     z-index: 1;
-    border: 1px solid rgba(40,40,40,.5);
+    border-radius: 3px 0 0 0;
     border-bottom: none;
     border-right: none;
-    > .channel-id, > .close {
-      line-height: 1;
+    > .channel-id , > .close {
+      transition: background-color 0.2s, color 0.2s, padding 0.2s;
+      line-height: 24px;
       font-size: 16px;
       padding: 5px 12px;
       vertical-align: middle;
-      color: #fff;
+      color: #ccc;
       display: inline-block;
+      &:hover {
+        color: #fff;
+      }
     }
     > .channel-id {
       font-weight: bold;
+      &:hover {
+        padding-top: 3px;
+        padding-bottom: 6px;
+      }
     }
     > .close {
-      transition: background-color 0.2s;
       font-family: 'Arial', sans-serif;
       font-size: 24px;
       &:hover {
