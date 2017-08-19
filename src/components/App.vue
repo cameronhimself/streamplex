@@ -1,6 +1,16 @@
 <template>
   <div id="app">
     <div v-if="streams.length" id="app-container">
+      <action-bar
+        :isOpen="actionBar.isOpen"
+        :width="actionBar.width"
+        :bottomHeight="`${inactiveStreamRatio * 100}%`"
+        :isChatOpen="isChatOpen"
+        @toggle="actionBar.isOpen = ! actionBar.isOpen"
+        @goHome="goHome"
+        @addStreams="addingStreams = true"
+        @toggleChat="toggleChat">
+      ></action-bar>
       <stream-column
         :streams="streams"
         :testMode="testMode"
@@ -13,7 +23,7 @@
         :chats="chats"
         :isOpen="isChatOpen"
         :testMode="testMode"
-        @toggleChat="isChatOpen = ! isChatOpen">
+        @toggleChat="toggleChat">
       </chat-column>
     </div>
     <div v-else id="app-container">
@@ -26,6 +36,13 @@
         </form>
       </div>
     </div>
+    <modal v-show="addingStreams" @close="addingStreams = false">
+      <form @submit.prevent="addStreams">
+        <h3>Add Streams</h3>
+        <input type="text" v-model="addStreamsString" />
+        <button class="btn" type="submit">Add</button>
+      </form>
+    </modal>
   </div>
 </template>
 
@@ -34,19 +51,26 @@
   import StreamColumn from './StreamColumn.vue';
   import Modal from './Modal.vue';
   import ChatColumn from './ChatColumn.vue';
+  import ActionBar from './ActionBar.vue';
   import queryString from 'query-string';
 
   const history = createHistory();
 
   export default {
     name: 'app',
-    components: { StreamColumn, ChatColumn, Modal },
+    components: { StreamColumn, ChatColumn, Modal, ActionBar },
     data () {
       return {
         streams: [],
         activeStreamRatio: 0.7,
         isChatOpen: true,
         testMode: false,
+        addingStreams: false,
+        addStreamsString: '',
+        actionBar: {
+          width: 40,
+          isOpen: true,
+        },
       };
     },
     created() {
@@ -55,16 +79,17 @@
         this.testMode = parsed.testMode != false;
       }
       if (parsed.streams) {
-        this.streams = parsed.streams
-          .split(' ')
-          .filter(s => s) // filter empty strings
-          .map((streamId, idx) => ({
-            id: streamId.trim(),
-            order: idx,
-            active: idx === 0,
-            ready: false,
-          }));
+        this.streams = this.streamsFromString(parsed.streams);
       }
+
+      // Update streams if query param changes.
+      history.listen((location, action) => {
+        const currentQueryParams = queryString.parse(location.search);
+        const streamsParam = currentQueryParams.streams || '';
+        if (this.streamsQueryString !== streamsParam) {
+          this.streams = this.streamsFromString(streamsParam);
+        }
+      });
     },
     computed: {
       chats() {
@@ -140,6 +165,29 @@
         } else {
           stream.player.setMuted(true);
         }
+      },
+      goHome() {
+        history.push('');
+      },
+      toggleChat() {
+        this.isChatOpen = ! this.isChatOpen;
+      },
+      addStreams() {
+        const newStreams = this.streamsFromString(this.addStreamsString);
+        this.addStreamsString = '';
+        this.addingStreams = false;
+        this.streams = this.streams.concat(newStreams);
+      },
+      streamsFromString(streams) {
+        return streams
+          .split(' ')
+          .filter(s => s) // filter empty strings
+          .map((streamId, idx) => ({
+            id: streamId.trim(),
+            order: this.streams.length + idx,
+            active: this.streams.length + idx === 0,
+            ready: false,
+          }));
       },
     },
   };
